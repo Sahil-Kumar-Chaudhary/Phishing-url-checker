@@ -1,0 +1,5 @@
+{
+  "name": "Phishing URL Checker",
+  "description": "A professional tool to analyze and detect potentially malicious or phishing URLs.",
+  "requestFramePermissions": []
+}
