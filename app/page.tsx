@@ -204,7 +204,7 @@ export default function PhishingChecker() {
                 Complete URL <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Intelligence.</span>
               </h1>
               <p className="mt-4 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10">
-                Advanced OSINT URL analysis to protect you from malicious websites, scams, and credential theft.
+                Advanced Threat Intelligence URL analysis to protect you from malicious websites, scams, and credential theft.
               </p>
             </motion.div>
 
