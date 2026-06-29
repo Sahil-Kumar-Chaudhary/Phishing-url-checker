@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AnalysisReport } from '../types/analysis';
+import { normalizeUrl } from '../utils/url';
 import { 
   WebsiteCard, IPInfoCard, WhoisCard, DNSCard, 
   SSLCard, HeadersCard, CookiesCard, RedirectsCard, 
@@ -122,6 +123,15 @@ export default function PhishingChecker() {
     e.preventDefault();
     if (!url.trim()) return;
 
+    let normalized: string;
+    try {
+      normalized = normalizeUrl(url);
+    } catch (err: any) {
+      alert("Invalid URL format. Please enter a valid domain or link.");
+      return;
+    }
+
+    setUrl(normalized);
     setLoading(true);
     setResult(null);
     setCopied(false);
@@ -130,7 +140,7 @@ export default function PhishingChecker() {
       const response = await fetch('/api/analysis', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
+        body: JSON.stringify({ url: normalized })
       });
 
       const data = await response.json();
@@ -140,6 +150,7 @@ export default function PhishingChecker() {
       }
 
       const report: AnalysisReport = data.data;
+      setUrl(report.url); // Update input box with the *real* reachable URL
       setResult(report);
       setHistory(prev => [report, ...prev.filter(item => item.url !== report.url)].slice(0, 10));
     } catch (error: any) {
@@ -271,7 +282,10 @@ export default function PhishingChecker() {
                       </div>
                       <div className="text-left flex-1">
                         <h4 className="text-white font-medium">Deep Analysis in Progress</h4>
-                        <p className="text-indigo-400 text-sm mt-1 h-5 overflow-hidden">
+                        <p className="text-sm font-medium text-slate-300 mt-1 mb-2">
+                          Scanning: <span className="text-indigo-400">{url}</span>
+                        </p>
+                        <p className="text-indigo-400/80 text-sm h-5 overflow-hidden">
                           <AnimatePresence mode="wait">
                             <motion.span
                               key={scanStep}
