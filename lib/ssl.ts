@@ -27,9 +27,11 @@ export async function getSslInfo(hostname: string): Promise<SSLInfo> {
             return;
           }
 
+          const getCertField = (field: string | string[] | undefined) => Array.isArray(field) ? field[0] : field;
+
           const info: SSLInfo = {
-            issuer: cert.issuer?.O || cert.issuer?.CN || null,
-            subject: cert.subject?.CN || null,
+            issuer: getCertField(cert.issuer?.O) || getCertField(cert.issuer?.CN) || null,
+            subject: getCertField(cert.subject?.CN) || null,
             validFrom: cert.valid_from || null,
             validUntil: cert.valid_to || null,
             serialNumber: cert.serialNumber || null,

@@ -1,8 +1,8 @@
 import { promises as dns } from "dns";
 import { DNSRecords } from "../types/analysis";
 
-const resolve4 = (host: string) => dns.resolve4(host, { ttl: false });
-const resolve6 = (host: string) => dns.resolve6(host);
+const resolve4 = (host: string) => dns.resolve4(host) as Promise<string[]>;
+const resolve6 = (host: string) => dns.resolve6(host) as Promise<string[]>;
 const resolveMx = dns.resolveMx;
 const resolveTxt = dns.resolveTxt;
 const resolveNs = dns.resolveNs;
