@@ -1,5 +1,12 @@
 import { LinksInfo } from '../types/analysis';
 
+/**
+ * Parses raw HTML to extract all internal and external HTTP/HTTPS links.
+ * Ignores mailto:, javascript:, and tel: schemes.
+ * @param url - The base URL used for resolving relative links.
+ * @param htmlContent - The HTML string to parse for anchor tags.
+ * @returns A promise resolving to an object containing arrays of internal and external links.
+ */
 export async function getLinks(url: string, htmlContent: string): Promise<LinksInfo> {
   const internal = new Set<string>();
   const external = new Set<string>();

@@ -13,6 +13,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    
+
     let normalized: string;
     try {
       normalized = normalizeUrl(body.url);

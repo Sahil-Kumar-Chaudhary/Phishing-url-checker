@@ -401,7 +401,7 @@ export default function PhishingChecker() {
                     </div>
                     <h3 className="text-2xl font-bold text-white mb-3">Awaiting URL</h3>
                     <p className="text-slate-400 max-w-md text-lg">
-                      Enter a link above to begin the security analysis. We'll check for SSL certificates, domain reputation, and malicious patterns.
+                      Enter a link above to begin the security analysis. We&apos;ll check for SSL certificates, domain reputation, and malicious patterns.
                     </p>
                   </motion.div>
                 )}

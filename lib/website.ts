@@ -1,5 +1,11 @@
 import { WebsiteInfo } from '../types/analysis';
 
+/**
+ * Extracts basic website information like page title and favicon from raw HTML content.
+ * @param url - The fully qualified URL of the website.
+ * @param htmlContent - The raw HTML string of the webpage.
+ * @returns A promise that resolves to WebsiteInfo containing parsed details.
+ */
 export async function getWebsiteInfo(url: string, htmlContent: string): Promise<WebsiteInfo> {
   const urlObj = new URL(url);
   

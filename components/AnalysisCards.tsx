@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { 
   Globe, Server, Shield, FileText, Link as LinkIcon, 
   Mail, Phone, Activity, Search, ExternalLink, 
@@ -39,7 +40,7 @@ export const WebsiteCard = ({ data }: { data: AnalysisReport['website'] }) => (
     {data.favicon && (
       <div className="flex justify-between items-center py-2">
         <span className="text-slate-400 text-sm font-medium">Favicon</span>
-        <img src={data.favicon} alt="favicon" className="w-6 h-6 rounded" onError={(e) => e.currentTarget.style.display = 'none'} />
+        <Image src={data.favicon} alt="favicon" width={24} height={24} unoptimized className="w-6 h-6 rounded" onError={(e) => e.currentTarget.style.display = 'none'} />
       </div>
     )}
   </Card>

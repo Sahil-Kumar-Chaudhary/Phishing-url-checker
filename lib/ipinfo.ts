@@ -4,6 +4,12 @@ import { IPInfo } from '../types/analysis';
 
 const resolve4 = promisify(dns.resolve4);
 
+/**
+ * Resolves a hostname to an IP address and fetches geolocation/ISP data.
+ * Useful for identifying hosting anomalies (e.g. unexpected foreign servers).
+ * @param hostname - The domain name or IP string to query.
+ * @returns An object containing the resolved IP and detailed location/ISP metadata.
+ */
 export async function getIpInfo(hostname: string): Promise<{ ip: string | null; info: IPInfo }> {
   let ip: string | null = null;
   const defaultInfo: IPInfo = {

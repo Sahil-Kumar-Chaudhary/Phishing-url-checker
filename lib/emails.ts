@@ -1,3 +1,9 @@
+/**
+ * Scans HTML content using a regex pattern to extract all visible email addresses.
+ * Useful for detecting potentially malicious contact emails on phishing sites.
+ * @param htmlContent - The raw HTML string.
+ * @returns A promise resolving to an array of unique email addresses found.
+ */
 export async function getEmails(htmlContent: string): Promise<string[]> {
   const emails = new Set<string>();
 

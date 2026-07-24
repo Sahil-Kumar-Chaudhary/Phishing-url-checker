@@ -46,11 +46,27 @@ export interface DNSRecords {
 }
 
 export interface SSLInfo {
+  // Existing fields (kept for backward compatibility)
   issuer: string | null;
   subject: string | null;
   validFrom: string | null;
   validUntil: string | null;
   serialNumber: string | null;
+
+  // New SSL Intelligence fields
+  tlsVersion?: string | null;
+  cipherName?: string | null;
+  cipherVersion?: string | null;
+  daysRemaining?: number | null;
+  isSelfSigned?: boolean | null;
+  subjectAltNames?: string[] | null;
+  chainAvailable?: boolean | null;
+  chainLength?: number | null;
+  pubKeyAlgorithm?: string | null;
+  signatureAlgorithm?: string | null;
+  keySize?: number | null;
+  isValid?: boolean | null;
+  isExpired?: boolean | null;
 }
 
 export interface CookieInfo {
