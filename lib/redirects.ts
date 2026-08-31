@@ -1,4 +1,5 @@
 import { RedirectInfo } from '../types/analysis';
+import { validateRedirectTarget, fetchWithValidation } from './security/networkValidation';
 
 export async function getRedirectChain(initialUrl: string): Promise<RedirectInfo[]> {
   const chain: RedirectInfo[] = [];
@@ -8,7 +9,7 @@ export async function getRedirectChain(initialUrl: string): Promise<RedirectInfo
 
   try {
     while (redirects < maxRedirects) {
-      const response = await fetch(currentUrl, {
+      const response = await fetchWithValidation(currentUrl, {
         method: 'HEAD',
         redirect: 'manual',
         headers: {
@@ -24,21 +25,22 @@ export async function getRedirectChain(initialUrl: string): Promise<RedirectInfo
       if (response.status >= 300 && response.status < 400) {
         const location = response.headers.get('location');
         if (location) {
-          // Resolve relative URLs
-          const nextUrl = new URL(location, currentUrl).toString();
-          currentUrl = nextUrl;
+          const redirectValidation = await validateRedirectTarget(currentUrl, location);
+          if (!redirectValidation.ok) {
+            chain.push({ url: location, status: 0 });
+            break;
+          }
+          currentUrl = redirectValidation.url.toString();
           redirects++;
         } else {
           break;
         }
       } else {
-        // Not a redirect
         break;
       }
     }
   } catch (error) {
     console.error('Error fetching redirect chain:', error);
-    // If it failed on HEAD, it might still just be a 1-step chain or a network error.
     if (chain.length === 0) {
       chain.push({ url: currentUrl, status: 0 });
     }

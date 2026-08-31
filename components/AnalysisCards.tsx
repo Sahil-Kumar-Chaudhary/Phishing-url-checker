@@ -215,14 +215,23 @@ export const ContactCard = ({ emails, phones }: { emails: string[], phones: stri
 
 export const PortsCard = ({ data }: { data: AnalysisReport['ports'] }) => (
   <Card title="Common Ports" icon={Activity}>
-    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-      {Object.entries(data).map(([port, isOpen]) => (
-        <div key={port} className={`p-3 rounded-xl border transition-all duration-300 flex flex-col items-center justify-center gap-1 ${isOpen ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]' : 'bg-[#0B0F19]/80 border-white/5 text-slate-500 hover:border-white/10'}`}>
-          <div className="text-xl font-bold">{port}</div>
-          <div className="text-[10px] uppercase font-bold tracking-wider">{isOpen ? 'Open' : 'Closed'}</div>
-        </div>
-      ))}
-    </div>
+    {data.status === 'disabled' ? (
+      <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-200">
+        Port scanning is disabled in the public analysis flow for SSRF protection.
+      </div>
+    ) : (
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+        {Object.entries(data).map(([port, isOpen]) => {
+          if (port === 'status') return null;
+          return (
+            <div key={port} className={`p-3 rounded-xl border transition-all duration-300 flex flex-col items-center justify-center gap-1 ${isOpen ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]' : 'bg-[#0B0F19]/80 border-white/5 text-slate-500 hover:border-white/10'}`}>
+              <div className="text-xl font-bold">{port}</div>
+              <div className="text-[10px] uppercase font-bold tracking-wider">{isOpen ? 'Open' : 'Closed'}</div>
+            </div>
+          );
+        })}
+      </div>
+    )}
   </Card>
 );
 

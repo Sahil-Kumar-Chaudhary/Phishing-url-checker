@@ -1,4 +1,5 @@
 import { WhoisInfo } from '../types/analysis';
+import { validateNetworkTarget } from './security/networkValidation';
 
 export async function getWhoisInfo(domain: string): Promise<WhoisInfo> {
   const defaultInfo: WhoisInfo = {
@@ -10,8 +11,13 @@ export async function getWhoisInfo(domain: string): Promise<WhoisInfo> {
   };
 
   try {
-    // NetworkCalc provides a free WHOIS API
-    const response = await fetch(`https://networkcalc.com/api/dns/whois/${domain}`);
+    const target = `https://networkcalc.com/api/dns/whois/${domain}`;
+    const validation = await validateNetworkTarget(target);
+    if (!validation.ok) {
+      return defaultInfo;
+    }
+
+    const response = await fetch(validation.url.toString());
     const data = await response.json();
 
     if (data && data.status === 'OK' && data.whois) {

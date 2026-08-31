@@ -1,10 +1,11 @@
 import { CookieInfo } from '../types/analysis';
+import { fetchWithValidation } from './security/networkValidation';
 
 export async function getCookies(url: string): Promise<CookieInfo[]> {
   const cookiesList: CookieInfo[] = [];
 
   try {
-    const response = await fetch(url, {
+    const response = await fetchWithValidation(url, {
       method: 'GET',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PhishGuard/1.0',

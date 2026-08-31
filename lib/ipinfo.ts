@@ -1,6 +1,7 @@
 import dns from 'dns';
 import { promisify } from 'util';
 import { IPInfo } from '../types/analysis';
+import { validateHostnameForNetwork, validateNetworkTarget } from './security/networkValidation';
 
 const resolve4 = promisify(dns.resolve4);
 
@@ -24,6 +25,11 @@ export async function getIpInfo(hostname: string): Promise<{ ip: string | null; 
   };
 
   try {
+    const hostValidation = await validateHostnameForNetwork(hostname);
+    if (!hostValidation.ok) {
+      return { ip: null, info: defaultInfo };
+    }
+
     // Check if hostname is already an IP
     const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
     if (ipRegex.test(hostname)) {
@@ -36,9 +42,13 @@ export async function getIpInfo(hostname: string): Promise<{ ip: string | null; 
     }
 
     if (ip) {
-      // Use ip-api.com (free, no auth needed for basic usage, HTTP only or HTTPS for pro)
-      // Using http because free tier of ip-api is http only
-      const response = await fetch(`http://ip-api.com/json/${ip}`);
+      const ipApiUrl = `http://ip-api.com/json/${ip}`;
+      const apiValidation = await validateNetworkTarget(ipApiUrl);
+      if (!apiValidation.ok) {
+        return { ip, info: defaultInfo };
+      }
+
+      const response = await fetch(apiValidation.url.toString());
       const data = await response.json();
 
       if (data.status === 'success') {

@@ -91,7 +91,8 @@ export interface LinksInfo {
 }
 
 export interface PortsInfo {
-  [port: number]: boolean | string;
+  status?: 'disabled' | 'available' | 'error';
+  [port: number]: boolean | string | 'disabled' | 'available' | 'error';
 }
 
 export interface SitemapInfo {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { analyzeUrl } from "../../../lib/analyzer";
+import { NetworkValidationError, validateNetworkTarget } from "../../../lib/security/networkValidation";
 import { normalizeUrl, resolveProtocol } from "../../../utils/url";
 
 export async function POST(request: NextRequest) {
@@ -13,8 +14,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    
-
     let normalized: string;
     try {
       normalized = normalizeUrl(body.url);
@@ -25,8 +24,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Actively probe to find the real supported protocol (fallback to HTTP if HTTPS fails)
-    const finalUrl = await resolveProtocol(normalized);
+    const targetValidation = await validateNetworkTarget(normalized);
+    if (!targetValidation.ok) {
+      return NextResponse.json(
+        { success: false, message: targetValidation.message },
+        { status: 403 }
+      );
+    }
+
+    const finalUrl = await resolveProtocol(targetValidation.url.toString());
 
     const report = await analyzeUrl(finalUrl);
 
@@ -36,12 +42,20 @@ export async function POST(request: NextRequest) {
       data: report
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof NetworkValidationError) {
+      return NextResponse.json(
+        { success: false, message: error.message },
+        { status: 403 }
+      );
+    }
+
+    const message = error instanceof Error ? error.message : "Something went wrong during analysis";
     console.error('API Analysis Error:', error);
     return NextResponse.json(
       {
         success: false,
-        message: error.message || "Something went wrong during analysis"
+        message,
       },
       { status: 500 }
     );

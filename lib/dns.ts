@@ -1,5 +1,6 @@
 import { promises as dns } from "dns";
 import { DNSRecords } from "../types/analysis";
+import { validateHostnameForNetwork } from "./security/networkValidation";
 
 const resolve4 = (host: string) => dns.resolve4(host) as Promise<string[]>;
 const resolve6 = (host: string) => dns.resolve6(host) as Promise<string[]>;
@@ -11,6 +12,20 @@ const resolveCname = dns.resolveCname;
 const resolveCaa = dns.resolveCaa;
 
 export async function getDnsRecords(hostname: string): Promise<DNSRecords> {
+  const validation = await validateHostnameForNetwork(hostname);
+  if (!validation.ok) {
+    return {
+      A: [],
+      AAAA: [],
+      MX: [],
+      TXT: [],
+      NS: [],
+      SOA: null,
+      CNAME: [],
+      CAA: [],
+    };
+  }
+
   const records: DNSRecords = {
     A: [],
     AAAA: [],

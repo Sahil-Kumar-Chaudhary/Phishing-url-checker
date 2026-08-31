@@ -1,4 +1,5 @@
 import { SitemapInfo } from '../types/analysis';
+import { validateNetworkTarget, fetchWithValidation } from './security/networkValidation';
 
 export async function getSitemapInfo(baseUrl: string): Promise<SitemapInfo> {
   const info: SitemapInfo = {
@@ -15,9 +16,14 @@ export async function getSitemapInfo(baseUrl: string): Promise<SitemapInfo> {
     const robotsUrl = `${origin}/robots.txt`;
     const sitemapUrl = `${origin}/sitemap.xml`;
 
+    const [robotsValidation, sitemapValidation] = await Promise.all([
+      validateNetworkTarget(robotsUrl),
+      validateNetworkTarget(sitemapUrl),
+    ]);
+
     const [robotsRes, sitemapRes] = await Promise.all([
-      fetch(robotsUrl, { method: 'HEAD' }).catch(() => null),
-      fetch(sitemapUrl, { method: 'HEAD' }).catch(() => null),
+      robotsValidation.ok ? fetchWithValidation(robotsUrl, { method: 'HEAD' }).catch(() => null) : null,
+      sitemapValidation.ok ? fetchWithValidation(sitemapUrl, { method: 'HEAD' }).catch(() => null) : null,
     ]);
 
     if (robotsRes && robotsRes.status === 200) {

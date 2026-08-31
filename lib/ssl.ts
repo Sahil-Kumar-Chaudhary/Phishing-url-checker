@@ -1,5 +1,6 @@
 import tls from 'tls';
 import { SSLInfo } from '../types/analysis';
+import { validateHostnameForNetwork } from './security/networkValidation';
 
 /**
  * Initiates a TLS connection to retrieve the deep SSL certificate intelligence.
@@ -35,6 +36,11 @@ export async function getSslInfo(hostname: string): Promise<SSLInfo> {
     isValid: null,
     isExpired: null,
   };
+
+  const validation = await validateHostnameForNetwork(hostname);
+  if (!validation.ok) {
+    return defaultInfo;
+  }
 
   return new Promise((resolve) => {
     try {

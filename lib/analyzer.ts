@@ -14,6 +14,7 @@ import { getOpenPorts } from './ports';
 import { getSitemapInfo } from './sitemap';
 import { calculateRiskScore } from './scoring';
 import { normalizeUrl } from '../utils/url';
+import { NetworkValidationError, validateNetworkTarget, fetchWithValidation } from './security/networkValidation';
 
 export async function analyzeUrl(inputUrl: string): Promise<AnalysisReport> {
   const urlToParse = normalizeUrl(inputUrl);
@@ -22,10 +23,15 @@ export async function analyzeUrl(inputUrl: string): Promise<AnalysisReport> {
   const hostname = urlObj.hostname;
   const finalUrl = urlObj.href;
 
+  const targetValidation = await validateNetworkTarget(finalUrl);
+  if (!targetValidation.ok) {
+    throw new NetworkValidationError(targetValidation);
+  }
+
   // 1. Fetch HTML Content
   let htmlContent = '';
   try {
-    const res = await fetch(finalUrl, {
+    const res = await fetchWithValidation(finalUrl, {
       headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PhishGuard/1.0' },
       signal: AbortSignal.timeout(5000),
     });

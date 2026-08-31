@@ -1,44 +1,12 @@
-import net from 'net';
 import { PortsInfo } from '../types/analysis';
 
-const COMMON_PORTS = [21, 22, 25, 53, 80, 110, 143, 443, 3306, 3389, 8080];
-
+/**
+ * The public analysis API must not perform unrestricted server-side port scanning.
+ * This module is kept for future controlled use, but the public flow disables it to
+ * avoid turning the application into an SSRF-capable scanner. If the function is ever
+ * re-enabled, strict validation must be enforced before any socket attempt.
+ */
 export async function getOpenPorts(hostname: string): Promise<PortsInfo> {
-  const results: PortsInfo = {};
-
-  const checkPort = (port: number): Promise<boolean> => {
-    return new Promise((resolve) => {
-      const socket = new net.Socket();
-      socket.setTimeout(1500); // Short timeout so it doesn't hang
-
-      socket.on('connect', () => {
-        socket.destroy();
-        resolve(true);
-      });
-
-      socket.on('timeout', () => {
-        socket.destroy();
-        resolve(false);
-      });
-
-      socket.on('error', () => {
-        resolve(false);
-      });
-
-      socket.connect(port, hostname);
-    });
-  };
-
-  try {
-    const checks = COMMON_PORTS.map(async (port) => {
-      const isOpen = await checkPort(port);
-      results[port] = isOpen;
-    });
-
-    await Promise.all(checks);
-  } catch (error) {
-    console.error('Error checking ports:', error);
-  }
-
-  return results;
+  void hostname;
+  return { status: 'disabled' };
 }
